@@ -11,8 +11,8 @@ Have all methods necessary to connect with the Askimet api.
 
 For more info on what parameters to pass on each method, check: http://akismet.com/development/api/
 
-Requires:
-=========
+Requires
+========
 - An Askimet API key: The development key can be got from: http://akismet.com/contact/ and the Askimet API key can be got from: https://akismet.com/signup/ .
 
 Current Version
