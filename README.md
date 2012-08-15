@@ -15,11 +15,8 @@ Requires:
 =========
 - An Askimet API key: The development key can be got from: http://akismet.com/contact/ and the Askimet API key can be got from: https://akismet.com/signup/ .
 
-Note: Currently it is structured to work with CakePHP v2.x, but I believe that with a few tweaks it can easily works with previous versions
-
 Current Version
 ===============
-
 The current version of the component have the basic working skeleton and the necessary methods to perform a key check, verify a comment, submit a spam or ham.
 
 Next Version
@@ -27,3 +24,7 @@ Next Version
 - Code cleanup
 - More debug options
 - documentation on code
+
+Notes
+=====
+- Currently it is structured to work with CakePHP v2.x, but I believe that with a few tweaks it can easily works with previous versions
