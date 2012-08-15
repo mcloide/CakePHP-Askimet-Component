@@ -114,7 +114,7 @@ class AskimetComponent extends Component {
 		$postParams = array(
 			'key' => $params['api_key'],
 			'blog' => urlencode($this->url),
-			'user_agent' => urlencode($_SERVER['HTTP_USER_AGENT']),
+			'user_agent' => $this->getUserAgent(),
 			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
 			'referrer' => urlencode($params['referrer']),
 			'permalink' => urlencode($params['permalink']),
@@ -135,7 +135,7 @@ class AskimetComponent extends Component {
 				$result = array('spam' => false);
 				break;
 			default:
-				if ($params['debug']) {
+				if (!empty($params['debug'])) {
 					$response = $this->post_to_askimet($postParams, static::COMMENT_CHECK_METHOD, true);
 				}
 				$result = array('spam' => false, 'error' => $response);
@@ -148,7 +148,7 @@ class AskimetComponent extends Component {
 		$postParams = array(
 			'key' => $params['api_key'],
 			'blog' => urlencode($this->url),
-			'user_agent' => urlencode($_SERVER['HTTP_USER_AGENT']),
+			'user_agent' => $this->getUserAgent(),
 			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
 			'referrer' => urlencode($_SERVER['HTTP_REFERER']),
 			'permalink' => urlencode($params['permalink']),
@@ -167,7 +167,7 @@ class AskimetComponent extends Component {
 		$postParams = array(
 			'key' => $params['api_key'],
 			'blog' => urlencode($this->url),
-			'user_agent' => urlencode($_SERVER['HTTP_USER_AGENT']),
+			'user_agent' => $this->getUserAgent(),
 			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
 			'referrer' => urlencode($params['referrer']),
 			'permalink' => urlencode($params['permalink']),
@@ -202,7 +202,7 @@ class AskimetComponent extends Component {
 	}
 
 	protected function post_to_askimet($params, $method, $forceHeaders = false) {
-		$postUrl = static::BASE_URL . '/' . static::API_VERSION . '/' . $method;
+		$postUrl = $params['key'] . '.' . static::BASE_URL . '/' . static::API_VERSION . '/' . $method;
 		$post = $this->construct_request_params($params);
 
 		$ch = curl_init();
@@ -233,5 +233,9 @@ class AskimetComponent extends Component {
 		if (!empty($type) && in_array($type, $validTypes)) {
 			return $type;
 		}
+	}
+
+	public function getUserAgent() {
+		return urlencode('CakePHP/' . Configure::read('Cake.version') . ' | Askimet Component/1.0');
 	}
 }
