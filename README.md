@@ -11,7 +11,9 @@ Have all methods necessary to connect with the Askimet api.
 
 For more info on what parameters to pass on each method, check: http://akismet.com/development/api/
 
-* @requires: An Askimet API key
+Requires:
+=========
+- An Askimet API key: The development key can be got from: http://akismet.com/contact/ and the Askimet API key can be got from: https://akismet.com/signup/ .
 
 Note: Currently it is structured to work with CakePHP v2.x, but I believe that with a few tweaks it can easily works with previous versions
 
