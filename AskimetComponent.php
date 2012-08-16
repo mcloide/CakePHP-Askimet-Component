@@ -150,16 +150,16 @@ class AskimetComponent extends Component {
 			'blog' => urlencode($this->url),
 			'user_agent' => $this->getUserAgent(),
 			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
-			'referrer' => urlencode($_SERVER['HTTP_REFERER']),
+			'referrer' => urlencode(isset($_SERVER['HTTP_REFERER']) ?  $_SERVER['HTTP_REFERER'] : '/'),
 			'permalink' => urlencode($params['permalink']),
 			'comment_type' => urlencode($this->setCommentType($params['comment_type'])),
 			'comment_author' => urlencode($params['comment_author']),
 			'comment_author_email' => urlencode($params['comment_author_email']),
 			'comment_author_url' => (!empty($params['comment_author_url'])) ? urlencode($params['comment_author_url']) : '',
-			'comment_content' => urlencode($params['comment_contnet'])
+			'comment_content' => urlencode($params['comment_content'])
 		);
 
-		$response = $this->post_to_askimet($params, static::SUBMIT_SPAM_METHOD);
+		$response = $this->post_to_askimet($postParams, static::SUBMIT_SPAM_METHOD);
 		return ($response);
 	}
 
@@ -169,13 +169,13 @@ class AskimetComponent extends Component {
 			'blog' => urlencode($this->url),
 			'user_agent' => $this->getUserAgent(),
 			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
-			'referrer' => urlencode($params['referrer']),
+			'referrer' => urlencode(isset($_SERVER['HTTP_REFERER']) ?  $_SERVER['HTTP_REFERER'] : '/'),
 			'permalink' => urlencode($params['permalink']),
 			'comment_type' => urlencode($this->setCommentType($params['comment_type'])),
 			'comment_author' => urlencode($params['comment_author']),
 			'comment_author_email' => urlencode($params['comment_author_email']),
 			'comment_author_url' => (!empty($params['comment_author_url'])) ? urlencode($params['comment_author_url']) : '',
-			'comment_content' => urlencode($params['comment_contnet'])
+			'comment_content' => urlencode($params['comment_content'])
 		);
 
 		$response = $this->post_to_askimet($postParams, static::SUBMIT_HAM_METHOD);
