@@ -22,10 +22,8 @@ Current Version
 Examples
 ========
 
-{code}
-  	// verify key
-    var_dump($this->Askimet->verify_key(array('key' => 'yourKey')));
     
+		var_dump($this->Askimet->verify_key(array('key' => 'yourKey')));
 		$params = array(
 			'key' => 'yourKey',
 			'comment_author' => 'viagra-test-123',
@@ -50,7 +48,6 @@ Examples
 		);
 		var_dump($this->Askimet->comment_check($params));
 		var_dump($this->Askimet->submit_ham($params));
-{code}
 
 
 Notes
