@@ -17,13 +17,41 @@ Requires
 
 Current Version
 ===============
-The current version of the component have the basic working skeleton and the necessary methods to perform a key check, verify a comment, submit a spam or ham.
+1.0 Stable
 
-Next Version
-============
-- Code cleanup
-- More debug options
-- documentation on code
+Examples
+========
+
+{code}
+  	// verify key
+    var_dump($this->Askimet->verify_key(array('key' => 'yourKey')));
+    
+		$params = array(
+			'key' => 'yourKey',
+			'comment_author' => 'viagra-test-123',
+			'comment_author_email' => 'viagratest123@spamcheck.com',
+			'comment_author_url' => '',
+			'comment_content' => 'testing spam check with askimet',
+			'permalink' => 'http://localhost',
+			'comment_type' => 'comment',
+		//	'debug' => true // enable this flag if you get an error response from comment check
+		);
+		var_dump($this->Askimet->comment_check($params));
+		var_dump($this->Askimet->submit_spam($params));
+    
+		$params = array(
+			'key' => 'yourKey',
+			'comment_author' => 'a-valid-author',
+			'comment_author_email' => 'a-valid-email@validomain.com',
+			'comment_author_url' => '',
+			'comment_content' => 'testing spam check with askimet',
+			'permalink' => 'http://localhost',
+			'comment_type' => 'comment'
+		);
+		var_dump($this->Askimet->comment_check($params));
+		var_dump($this->Askimet->submit_ham($params));
+{code}
+
 
 Notes
 =====
