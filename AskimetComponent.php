@@ -32,6 +32,12 @@
 class AskimetComponent extends Component {
 
 	/**
+	 * constant to define the current version of the component
+	 * @const COMPONENT_VERSION
+	 */
+	const COMPONENT_VERSION = '1.0';
+
+	/**
 	 * constant to define the base api rest request url
 	 * @const BASE_URL
 	 */
@@ -97,35 +103,32 @@ class AskimetComponent extends Component {
 	/**
 	 * Will verify if the given set key / domain are valid on askimet
 	 *
+	 * @param array $params The necessary params to perform the request
+	 * @param[key] Askimet Api Key
+	 *
 	 * @return boolean
 	 */
-	public function verify_key ($params) {
-		$url = urlencode($this->url);
-		$postParams = array(
-			'key' => $params['api_key'],
-			'blog' => $url
-		);
-
-		$response = $this->post_to_askimet($postParams, static::VERIFY_KEY_METHOD);
+	public function verify_key($params) {
+		$response = $this->post($params, static::VERIFY_KEY_METHOD);
 		return (!empty($response) && $response == 'valid');
 	}
 
+	/**
+	 * Will verify if a given comment is spam
+	 *
+	 * @param array $params The necessary params to provide the post
+	 * @param[key] Askimet API key - required
+	 * @param[permalink] The link where the comment / message was posted to
+	 * @param[comment_author] The name of the author
+	 * @param[comment_author_email] The email of the comment author
+	 * @param[comment_author_url] The author url
+	 * @param[comment_content] The content for the comment
+	 * @return array $result
+	 * @returnParam $result[spam]
+	 * @optionalReturnParam $result[error]
+	 */
 	public function comment_check($params) {
-		$postParams = array(
-			'key' => $params['api_key'],
-			'blog' => urlencode($this->url),
-			'user_agent' => $this->getUserAgent(),
-			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
-			'referrer' => urlencode($params['referrer']),
-			'permalink' => urlencode($params['permalink']),
-			'comment_type' => urlencode($this->setCommentType($params['comment_type'])),
-			'comment_author' => urlencode($params['comment_author']),
-			'comment_author_email' => urlencode($params['comment_author_email']),
-			'comment_author_url' => (!empty($params['comment_author_url'])) ? urlencode($params['comment_author_url']) : '',
-			'comment_content' => urlencode($params['comment_content'])
-		);
-
-		$response = $this->post_to_askimet($postParams, static::COMMENT_CHECK_METHOD);
+		$response = $this->post($params, static::COMMENT_CHECK_METHOD);
 		$result = array();
 		switch($response) {
 			case 'true':
@@ -136,7 +139,7 @@ class AskimetComponent extends Component {
 				break;
 			default:
 				if (!empty($params['debug'])) {
-					$response = $this->post_to_askimet($postParams, static::COMMENT_CHECK_METHOD, true);
+					$response = $this->post($params, static::COMMENT_CHECK_METHOD, true);
 				}
 				$result = array('spam' => false, 'error' => $response);
 				break;
@@ -144,41 +147,37 @@ class AskimetComponent extends Component {
 		return $result;
 	}
 
+	/**
+	 * Will submit a given comment as spam - use the same params as comment check
+	 *
+	 * @param array $params The necessary params to provide the post
+	 * @param[key] Askimet API key - required
+	 * @param[permalink] The link where the comment / message was posted to
+	 * @param[comment_author] The name of the author
+	 * @param[comment_author_email] The email of the comment author
+	 * @param[comment_author_url] The author url
+	 * @param[comment_content] The content for the comment
+	 * @return string $result
+	 */
 	public function submit_spam($params) {
-		$postParams = array(
-			'key' => $params['api_key'],
-			'blog' => urlencode($this->url),
-			'user_agent' => $this->getUserAgent(),
-			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
-			'referrer' => urlencode(isset($_SERVER['HTTP_REFERER']) ?  $_SERVER['HTTP_REFERER'] : '/'),
-			'permalink' => urlencode($params['permalink']),
-			'comment_type' => urlencode($this->setCommentType($params['comment_type'])),
-			'comment_author' => urlencode($params['comment_author']),
-			'comment_author_email' => urlencode($params['comment_author_email']),
-			'comment_author_url' => (!empty($params['comment_author_url'])) ? urlencode($params['comment_author_url']) : '',
-			'comment_content' => urlencode($params['comment_content'])
-		);
-
-		$response = $this->post_to_askimet($postParams, static::SUBMIT_SPAM_METHOD);
+		$response = $this->post($params, static::SUBMIT_SPAM_METHOD);
 		return ($response);
 	}
 
+	/**
+	 * Will submit a given comment as ham (not spam) - use the same params as comment check
+	 *
+	 * @param array $params The necessary params to provide the post
+	 * @param[key] Askimet API key - required
+	 * @param[permalink] The link where the comment / message was posted to
+	 * @param[comment_author] The name of the author
+	 * @param[comment_author_email] The email of the comment author
+	 * @param[comment_author_url] The author url
+	 * @param[comment_content] The content for the comment
+	 * @return string $result
+	 */
 	public function submit_ham($params) {
-		$postParams = array(
-			'key' => $params['api_key'],
-			'blog' => urlencode($this->url),
-			'user_agent' => $this->getUserAgent(),
-			'user_ip' => urlencode($_SERVER['REMOTE_ADDR']),
-			'referrer' => urlencode(isset($_SERVER['HTTP_REFERER']) ?  $_SERVER['HTTP_REFERER'] : '/'),
-			'permalink' => urlencode($params['permalink']),
-			'comment_type' => urlencode($this->setCommentType($params['comment_type'])),
-			'comment_author' => urlencode($params['comment_author']),
-			'comment_author_email' => urlencode($params['comment_author_email']),
-			'comment_author_url' => (!empty($params['comment_author_url'])) ? urlencode($params['comment_author_url']) : '',
-			'comment_content' => urlencode($params['comment_content'])
-		);
-
-		$response = $this->post_to_askimet($postParams, static::SUBMIT_HAM_METHOD);
+		$response = $this->post($params, static::SUBMIT_HAM_METHOD);
 		return ($response);
 	}
 
@@ -188,11 +187,13 @@ class AskimetComponent extends Component {
 	 * @param $params An array with parameters on key => value format
 	 * @return string $request
 	 */
-	protected function construct_request_params ($params) {
+	protected function build_curl_post_params($params) {
 		$request = '';
 		if (!empty($params) && is_array($params)) {
 			$count = 0;
 			foreach ($params as $key => $value) {
+				$value = urlencode($value);
+
 				$request .= (!empty($count)) ? '&' : '';
 				$request .= "{$key}={$value}";
 				++$count;
@@ -201,9 +202,63 @@ class AskimetComponent extends Component {
 		return $request;
 	}
 
-	protected function post_to_askimet($params, $method, $forceHeaders = false) {
-		$postUrl = $params['key'] . '.' . static::BASE_URL . '/' . static::API_VERSION . '/' . $method;
-		$post = $this->construct_request_params($params);
+	/**
+	 * Will format the post params to work in according to the method passed
+	 *
+	 * @param array $params
+	 * @return array $formatted
+	 */
+	protected function format_post_params($params, $method) {
+		$required = $formatted = array();
+		switch($method) {
+			case static::VERIFY_KEY_METHOD:
+					$required = array('key', 'blog');
+				break;
+			case static::COMMENT_CHECK_METHOD:
+			case static::SUBMIT_HAM_METHOD:
+			case static::SUBMIT_SPAM_METHOD:
+					$required = array('key', 'blog', 'user_agent', 'user_ip', 'referrer', 'permalink', 'comment_type', 'comment_author', 'comment_author_email', 'comment_author_url', 'comment_content');
+				break;
+		}
+
+		foreach ($required as $index => $param) {
+			switch ($param) {
+				case 'blog':
+					$formatted[$param] = $this->url;
+					break;
+				case 'user_agent':
+					$formatted[$param] = $this->get_ua();
+					break;
+				case 'referrer':
+					$formatted[$param] = isset($_SERVER['HTTP_REFERER']) ?  $_SERVER['HTTP_REFERER'] : '/';
+					break;
+				case 'user_ip':
+					$formatted[$param] = $_SERVER['REMOTE_ADDR'];
+					break;
+				case 'comment_type':
+					$formatted[$param] = $this->set_comment_type((isset($params[$param])) ? $params[$param] : '');
+					break;
+				default:
+					$formatted[$param] = (isset($params[$param])) ? $params[$param] : '';
+					break;
+			}
+		}
+
+		return $formatted;
+	}
+
+	/**
+	 * Will post the request to the Askimet API
+	 *
+	 * @param array $params
+	 * @param string $method
+	 * @optionalParam boolean $forceHeaders
+	 * @return string
+	 */
+	protected function post($params, $method, $forceHeaders = false) {
+		$params = $this->format_post_params($params, $method);
+		$postUrl = $this->construc_post_url($params['key'], $method);
+		$post = $this->build_curl_post_params($params);
 
 		$ch = curl_init();
 	
@@ -217,25 +272,49 @@ class AskimetComponent extends Component {
 		}
 	
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-		$res = curl_exec($ch);
+		$response = curl_exec($ch);
 
-
-		if (curl_errno($ch)) {
-			return false;
-		} else {
+		if (!curl_errno($ch)) {
 			curl_close($ch);
-			return $res;
+			return $response;
 		}
+
+		return false;
 	}
 
-	protected function setCommentType($type) {
+	/**
+	 * Will get a given comment type and return the correct type for it.
+	 *
+	 * @param string $type The comment type
+	 * @return string
+	 */
+	protected function set_comment_type($type) {
 		$validTypes = array('blank', 'comment', 'trackback', 'pingback', 'custom');
 		if (!empty($type) && in_array($type, $validTypes)) {
 			return $type;
 		}
+
+		return 'blank';
 	}
 
-	public function getUserAgent() {
-		return urlencode('CakePHP/' . Configure::read('Cake.version') . ' | Askimet Component/1.0');
+	/**
+	 * Will build the user agent in accordance with Askimet Api
+	 *
+	 * @return string
+	 */
+	public function get_ua() {
+		return 'CakePHP/' . Configure::read('Cake.version') . ' | Askimet Component/' . static::COMPONENT_VERSION;
+	}
+
+	/**
+	 * Will construct the post url for the askimet api
+	 *
+	 * @param string $key The api key
+	 * @param string $method The method being posted
+	 *
+	 * @return string
+	 */
+	protected function construc_post_url($key, $method) {
+		return $key . '.' . static::BASE_URL . '/' . static::API_VERSION . '/' . $method;
 	}
 }
