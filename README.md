@@ -53,3 +53,5 @@ Examples
 Notes
 =====
 - Currently it is structured to work with CakePHP v2.x, but I believe that with a few tweaks it can easily works with previous versions
+
+[![endorse](http://api.coderwall.com/mcloide/endorsecount.png)](http://coderwall.com/mcloide)
